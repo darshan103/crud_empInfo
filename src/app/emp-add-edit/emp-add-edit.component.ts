@@ -46,8 +46,21 @@ export class EmpAddEditComponent implements OnInit {
     this.empForm.patchValue(this.data);
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.uri = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onFormSubmit() {
     if (this.empForm.valid) {
+      const formData = this.empForm.value;
+      formData.image = this.uri; // Assign URI to image field in form data
       if (this.data) {
         this._empService
           .updateEmployee(this.data._id, this.empForm.value)
