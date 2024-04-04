@@ -1,0 +1,147 @@
+const express = require('express');
+const db = require('./db.js')
+const cors = require('cors');
+const bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.json({ limit: '50mb' })); // Increase payload size limit for JSON payloads
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Increase payload size limit for URL-encoded payloads
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+
+// MySQL connection
+async function connectAndSetUpDatabase() {
+    try {
+      // Create or update users table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS user (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          first_name VARCHAR(255) NOT NULL,
+          last_name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL,
+          dob DATE NOT NULL,
+          gender ENUM('Male', 'Female', 'Other') NOT NULL,
+          education VARCHAR(255) NOT NULL,
+          company VARCHAR(255) NOT NULL,
+          experience INT NOT NULL DEFAULT 0,
+          image VARCHAR(255),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+      `);
+      await db.end();
+      console.log('Database and table setup complete.');
+    } catch (error) {
+      console.error('Error setting up database:', error);
+      throw error;
+    }
+  }
+  
+//   (async () => {
+//     try {
+//       await connectAndSetUpDatabase();
+//       console.log('Database setup completed successfully.');
+//     } catch (error) {
+//       console.error('Error setting up database:', error);
+//     }
+//   })();
+
+// Temporary Code 
+// db.query('SELECT * FROM userdb.new_table', (err, results) => {    
+//     if (err) {
+//         console.error('Error executing query:', err);
+//         return;
+//     }
+//     console.log('Query results:', results);
+// });
+
+
+
+// Routes
+app.get('/', (req, res) => {
+  res.send('Hello Darshan');
+});
+
+app.get('/employees', (req, res) => {
+  const sql = 'SELECT * FROM employees';
+  connection.query(sql, (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+
+app.get('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT * FROM employees WHERE id = ?';
+  connection.query(sql, [id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+      return;
+    }
+    if (results.length === 0) {
+      res.status(404).json({ message: `Cannot find any employee with ID ${id}` });
+      return;
+    }
+    res.status(200).json(results[0]);
+  });
+});
+
+app.post('/employees', (req, res) => {
+    console.log("hello")
+  const employeeData = req.body;
+  employeeData.id=1;
+  console.log(employeeData)
+  const sql = 'INSERT INTO employees SET ?';
+  connection.query(sql, employeeData, async(error, results) => {
+    if (error) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+    const connection = await connectAndSetUpDatabase();
+    console.log(connection)
+    res.status(200).json({ id: results.insertId, ...employeeData });
+  });
+});
+
+app.put('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const employeeData = req.body;
+  const sql = 'UPDATE employees SET ? WHERE id = ?';
+  connection.query(sql, [employeeData, id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+      return;
+    }
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: `Cannot find any employee with ID ${id}` });
+      return;
+    }
+    res.status(200).json({ id, ...employeeData });
+  });
+});
+
+app.delete('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM employees WHERE id = ?';
+  connection.query(sql, [id], (error, results) => {
+    if (error) {
+      res.status(500).json({ message: error.message });
+      return;
+    }
+    if (results.affectedRows === 0) {
+      res.status(404).json({ message: `Cannot find any employee with ID ${id}` });
+      return;
+    }
+    res.status(200).json({ message: `Employee with ID ${id} has been deleted` });
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Node API app is running on port ${PORT}`);
+});

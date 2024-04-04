@@ -1,68 +1,74 @@
-<div mat-dialog-title class="d-flex justify-content-center mt-3">
-    <h1>Employee Information Form</h1>
+<div class="container">
+    <div mat-dialog-title class="d-flex justify-content-center mt-2">
+        <h1>Employee Information Form</h1>
+    </div>
+    <div>
+        <form [formGroup]="empForm" (ngSubmit)="onFormSubmit()">
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                <img [src]="uri" alt="" width="100" height="100" class="previewImg">
+                <input type="file" name="profile" (change)="onFileSelected($event)" accept="image/*,application/pdf">
+            </div>
+            <div mat-dialog-content class="pt-2">
+                <div class="d-flex justify-content-between">
+                    <mat-form-field appearance="outline">
+                        <mat-label>First name</mat-label>
+                        <input matInput type="text" placeholder="Enter First Name" formControlName="firstName" required>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Last Name</mat-label>
+                        <input matInput placeholder="Enter Last Name" formControlName="lastName">
+                    </mat-form-field>
+                </div>
+
+                <div class="row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput type="email" placeholder="Ex. test@gmail.com" formControlName="email" required>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Date of birth</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="dob" required>
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <mat-radio-group aria-label="Select an option" formControlName="gender">
+                        <mat-label><b>Gender</b></mat-label>
+                        <mat-radio-button value="male">Male</mat-radio-button>
+                        <mat-radio-button value="female">Female</mat-radio-button>
+                        <mat-radio-button value="others">Others</mat-radio-button>
+                    </mat-radio-group>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Education</mat-label>
+                        <mat-select formControlName="education">
+                            <mat-option *ngFor="let val of education" [value]="val">{{val}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Company</mat-label>
+                        <input matInput placeholder="Ex. Google" formControlName="company" required>
+                    </mat-form-field>
+                </div>
+                <div class="row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Experience</mat-label>
+                        <input matInput placeholder="Ex. 4" type="number" formControlName="experience">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div mat-dialog-actions class="d-flex justify-content-around p-0 px-5 pb-4">
+                <button class="w-25 p-3" mat-raised-button type="button" color="warn"
+                    [mat-dialog-close]="false">Cancel</button>
+                <button class="w-25 p-3" mat-raised-button color="primary" type="submit">{{data ? 'Update':
+                    'Save'}}</button>
+            </div>
+        </form>
+    </div>
 </div>
-<form [formGroup]="empForm" (ngSubmit)="onFormSubmit()">
-    <div class="d-flex flex-column align-items-center justify-content-center m-2">
-        <img [src]="uri" alt="Profile Preview" width="100" height="100" class="rounded-circle">
-        <input type="file" name="profile" (change)="onFileSelected($event)" accept="image/*">
-    </div>
-    <div mat-dialog-content class="pt-2">
-        <div class="d-flex justify-content-between">
-            <mat-form-field appearance="outline" >
-                <mat-label>First name</mat-label>
-                <input matInput type="text" placeholder="Enter First Name" formControlName="firstName" required>
-            </mat-form-field>
-            <mat-form-field appearance="outline" >
-                <mat-label>Last Name</mat-label>
-                <input matInput placeholder="Enter Last Name" formControlName="lastName">
-            </mat-form-field>
-        </div>
-
-        <div class="row">
-            <mat-form-field appearance="outline" >
-                <mat-label>Email</mat-label>
-                <input matInput type="email" placeholder="Ex. test@gmail.com" formControlName="email" required>
-            </mat-form-field>
-            <mat-form-field appearance="outline" >
-                <mat-label>Date of birth</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="dob" required>
-                <mat-hint>MM/DD/YYYY</mat-hint>
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <mat-radio-group aria-label="Select an option" formControlName="gender" >
-                <mat-label><b>Gender</b></mat-label>
-                <mat-radio-button value="male">Male</mat-radio-button>
-                <mat-radio-button value="female">Female</mat-radio-button>
-                <mat-radio-button value="others">Others</mat-radio-button>
-            </mat-radio-group>
-        </div>
-
-        <div class="d-flex justify-content-between">
-            <mat-form-field appearance="outline">
-                <mat-label>Education</mat-label>
-                <mat-select formControlName="education">
-                    <mat-option *ngFor="let val of education" [value]="val">{{val}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-                <mat-label>Company</mat-label>
-                <input matInput placeholder="Ex. Google" formControlName="company" required>
-            </mat-form-field>
-        </div>
-        <div class="row">
-            <mat-form-field appearance="outline">
-                <mat-label>Experience</mat-label>
-                <input matInput placeholder="Ex. 4" type="number" formControlName="experience">
-            </mat-form-field>
-        </div>
-    </div>
-    <div mat-dialog-actions class="d-flex justify-content-around p-0 px-5 pb-4">
-        <button class="w-25 p-3" mat-raised-button type="button" color="warn" [mat-dialog-close]="false">Cancel</button>
-        <button class="w-25 p-3" mat-raised-button color="primary" type="submit">{{data ? 'Update': 'Save'}}</button>
-    </div>
-</form>
