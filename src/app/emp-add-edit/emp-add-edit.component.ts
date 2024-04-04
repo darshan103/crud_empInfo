@@ -63,7 +63,7 @@ export class EmpAddEditComponent implements OnInit {
       formData.image = this.uri; // Assign URI to image field in form data
       if (this.data) {
         this._empService
-          .updateEmployee(this.data._id, this.empForm.value)
+          .updateEmployee(this.data.id, this.empForm.value)
           .subscribe({
             next: (val: any) => {
               this._coreService.openSnackBar('Employee detail updated!');

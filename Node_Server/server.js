@@ -111,9 +111,9 @@ app.delete('/employees/:id', async(req, res) => {
   console.log("Line 108",id)
   const sql = 'DELETE FROM users WHERE id ='+id;
   const deleteQuery = await connection.query(sql);
-  console.log(deleteQuery)
-  console.log(deleteQuery[0])
-  console.log(deleteQuery[0].affectedRows)
+  // console.log(deleteQuery)
+  // console.log(deleteQuery[0])
+  // console.log(deleteQuery[0].affectedRows)
   // console.log(deleteQuery[0].ResultSetHeader & deleteQuery[0].ResultSetHeader.affectedRows)
   if(deleteQuery[0].affectedRows>0){
     res.status(200).json({ message: `Employee with ID ${id} has been deleted` });
@@ -137,6 +137,34 @@ app.delete('/employees/:id', async(req, res) => {
   //   console.log("Line 122")
   //   res.status(200).json({ message: `Employee with ID ${id} has been deleted` });
   // });
+});
+
+// Update user
+app.put('/employees/:id', async (req, res) => {
+  const connection = await connectToDatabase();
+  const {id} = req.params
+  console.log("Line 146",id)
+  const body = req.body;
+  console.log("Body is : ",body)
+  const { firstName, lastName, email, dob, gender, education, company, experience } = req.body;
+
+  try {
+    // Check if the user exists
+    const [existingUsers] = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (existingUsers.length === 0) {
+      res.status(404).json({ message: `User with ID ${id} not found` });
+      return;
+    }
+
+    // Update user
+    await connection.query('UPDATE users SET firstName=?, lastName=?, email=?, dob=?, gender=?, education=?, company=?, experience=? WHERE id=?', [firstName, lastName, email, dob, gender, education, company, experience, id]);
+
+    await connection.end();
+    res.status(200).json({ message: `User with ID ${id} updated successfully` });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Error updating user' });
+  }
 });
 
 
